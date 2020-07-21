@@ -1,0 +1,23 @@
+version: '3.7'
+
+services:
+  example-db:
+    image: mysql:5.7
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: $DB_PASSWORD
+      MYSQL_DATABASE: $DB_NAME
+    networks:
+      - default_net
+    ports:
+      - 3308:3306
+
+networks:
+  default_net:
+    name: default_net
+    driver: bridge
+volumes:
+  db_data:

@@ -1,0 +1,14 @@
+[package]
+name = "rocket-rust-example"
+version = "0.1.0"
+authors = ["danielmendoza <daltemen@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+rocket = "0.4.5"
+rocket_contrib = "0.4.5"
+serde = "1.0.114"
+serde_derive = "1.0.114"
+diesel = { version = "1.4.4", features = ["mysql", "r2d2"] }
