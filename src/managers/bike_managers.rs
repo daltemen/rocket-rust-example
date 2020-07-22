@@ -26,15 +26,15 @@ pub struct BikeOut {
 }
 
 pub struct BikeCrudManager<T>
-where
-    T: BikeRepo,
+    where
+        T: BikeRepo,
 {
     pub repo: T,
 }
 
 impl<T> BikeCrudManager<T>
-where
-    T: BikeRepo,
+    where
+        T: BikeRepo,
 {
     pub fn new(repo: T) -> Self {
         Self { repo }
@@ -42,8 +42,8 @@ where
 }
 
 impl<T> BikeManager for BikeCrudManager<T>
-where
-    T: BikeRepo,
+    where
+        T: BikeRepo,
 {
     fn create(&self, bike_in: BikeIn) -> Result<BikeOut, BikesManagerError> {
         let mut bike = Bike {
@@ -133,5 +133,70 @@ where
 
         let deleted = result.unwrap();
         Ok(deleted)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::repositories::mocks::BikeRepoMock;
+
+    fn get_manager() -> BikeCrudManager<BikeRepoMock> {
+        let repo_mock = BikeRepoMock::new();
+        let manager = BikeCrudManager::new(repo_mock);
+
+        manager
+    }
+
+    #[test]
+    fn test_bike_crud_manager_create() {
+        let manager = get_manager();
+
+        let description = "description".to_string();
+        let model = "model".to_string();
+
+        let bike_in = BikeIn {
+            description: Some(description.clone()),
+            model: Some(model.clone()),
+        };
+
+        let bike_out = manager.create(bike_in).unwrap();
+
+        assert_eq!(bike_out.description.unwrap(), description);
+        assert_eq!(bike_out.model.unwrap(), model);
+    }
+
+    #[test]
+    fn test_bike_crud_manager_read_all() {
+        let manager = get_manager();
+
+        let bike_out = manager.read_all().unwrap();
+
+        assert_eq!(bike_out.len(), 2);
+    }
+
+    #[test]
+    fn test_bike_crud_manager_update() {
+        let manager = get_manager();
+
+        let description = "description".to_string();
+        let model = "model".to_string();
+
+        let bike_in = BikeIn {
+            description: Some(description.clone()),
+            model: Some(model.clone()),
+        };
+        let bike_out = manager.update(1, bike_in).unwrap();
+
+        assert_eq!(bike_out.description.unwrap(), description);
+        assert_eq!(bike_out.model.unwrap(), model);
+    }
+
+    #[test]
+    fn test_bike_crud_manager_delete() {
+        let manager = get_manager();
+        let bike_out = manager.delete(1).unwrap();
+
+        assert!(bike_out);
     }
 }
