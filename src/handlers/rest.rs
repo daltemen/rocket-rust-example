@@ -1,7 +1,6 @@
 use crate::handlers::rest_models::{ApiResponse, BikeRequest, BikeResponse};
 use rocket::http::Status;
 use rocket_contrib::json::{Json, JsonValue};
-// use crate::db;
 use crate::configs::config;
 use crate::datasources::db;
 use crate::managers::bike_managers::{BikeIn, BikeManager};
@@ -21,6 +20,7 @@ pub fn create(bike: Json<BikeRequest>, connection: db::Connection) -> ApiRespons
         model: bike.model,
     };
 
+    // TODO: handle error
     let out = manager.create(bike).unwrap();
 
     let response = BikeResponse {
@@ -39,6 +39,7 @@ pub fn create(bike: Json<BikeRequest>, connection: db::Connection) -> ApiRespons
 pub fn read(connection: db::Connection) -> Json<JsonValue> {
     let manager = config::new_manager(&connection);
 
+    // TODO: handle error
     let bikes = manager.read_all().unwrap();
 
     let response: Vec<BikeResponse> = bikes
@@ -76,6 +77,7 @@ pub fn update(id: i32, bike: Json<BikeRequest>, connection: db::Connection) -> J
 pub fn delete(id: i32, connection: db::Connection) -> Json<JsonValue> {
     let manager = config::new_manager(&connection);
 
+    // TODO: handle error
     let result = manager.delete(id).unwrap();
     if result {
         Json(json!({"status": "ok"}))
