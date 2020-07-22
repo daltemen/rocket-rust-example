@@ -1,7 +1,7 @@
 use rocket::http::{ContentType, Status};
-use rocket_contrib::json::JsonValue;
 use rocket::response::Responder;
-use rocket::{Request, response, Response};
+use rocket::{response, Request, Response};
+use rocket_contrib::json::JsonValue;
 
 #[derive(Serialize, Deserialize)]
 pub struct BikeRequest {

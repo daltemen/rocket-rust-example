@@ -1,10 +1,10 @@
+use crate::handlers::rest_models::{ApiResponse, BikeRequest, BikeResponse};
+use rocket::http::Status;
 use rocket_contrib::json::{Json, JsonValue};
-use rocket::http::{Status};
-use crate::handlers::rest_models::{BikeRequest, BikeResponse, ApiResponse};
 // use crate::db;
 use crate::configs::config;
-use crate::managers::bike_managers::{BikeManager, BikeIn};
 use crate::datasources::db;
+use crate::managers::bike_managers::{BikeIn, BikeManager};
 
 #[get("/")]
 pub fn index() -> &'static str {
@@ -41,7 +41,8 @@ pub fn read(connection: db::Connection) -> Json<JsonValue> {
 
     let bikes = manager.read_all().unwrap();
 
-    let response: Vec<BikeResponse> = bikes.iter()
+    let response: Vec<BikeResponse> = bikes
+        .iter()
         .map(|b| BikeResponse {
             id: b.id.as_ref().unwrap().clone(),
             description: b.description.clone(),

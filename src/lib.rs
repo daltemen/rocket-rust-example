@@ -8,18 +8,17 @@ extern crate serde_derive;
 #[macro_use]
 extern crate diesel;
 
-use crate::handlers::rest;
 use crate::datasources::db;
+use crate::handlers::rest;
 
 mod domains;
 mod schema;
 
+mod configs;
+mod datasources;
+mod handlers;
 mod managers;
 mod repositories;
-mod handlers;
-mod datasources;
-mod configs;
-
 
 pub fn run() {
     rocket::ignite()

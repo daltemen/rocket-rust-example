@@ -1,7 +1,7 @@
-use crate::managers::manager_errors;
-use crate::domains::bike_repo::BikeRepo;
-use crate::managers::manager_errors::BikesManagerError;
 use crate::domains::bike::Bike;
+use crate::domains::bike_repo::BikeRepo;
+use crate::managers::manager_errors;
+use crate::managers::manager_errors::BikesManagerError;
 
 pub trait BikeManager {
     fn create(&self, bike_in: BikeIn) -> Result<BikeOut, manager_errors::BikesManagerError>;
@@ -26,24 +26,24 @@ pub struct BikeOut {
 }
 
 pub struct BikeCrudManager<T>
-    where
-        T: BikeRepo
+where
+    T: BikeRepo,
 {
     pub repo: T,
 }
 
-impl<T> BikeCrudManager<T> where
-    T: BikeRepo
+impl<T> BikeCrudManager<T>
+where
+    T: BikeRepo,
 {
     pub fn new(repo: T) -> Self {
-        Self {
-            repo
-        }
+        Self { repo }
     }
 }
 
-impl<T> BikeManager for BikeCrudManager<T> where
-    T: BikeRepo
+impl<T> BikeManager for BikeCrudManager<T>
+where
+    T: BikeRepo,
 {
     fn create(&self, bike_in: BikeIn) -> Result<BikeOut, BikesManagerError> {
         let mut bike = Bike {
@@ -84,7 +84,8 @@ impl<T> BikeManager for BikeCrudManager<T> where
         }
 
         let bikes = result.unwrap();
-        let outs = bikes.iter()
+        let outs = bikes
+            .iter()
             .map(|b| BikeOut {
                 id: b.id.clone(),
                 description: b.description.clone(),

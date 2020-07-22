@@ -1,23 +1,21 @@
-use crate::schema::bikes;
-use diesel;
-use diesel::prelude::*;
-use crate::repositories::db_models::BikeDB;
 use crate::domains::bike::Bike;
 use crate::domains::bike_errors;
 use crate::domains::bike_errors::BikesError;
 use crate::domains::bike_repo;
-use diesel::mysql::MysqlConnection;
+use crate::repositories::db_models::BikeDB;
+use crate::schema::bikes;
 use crate::schema::bikes::dsl::*;
+use diesel;
+use diesel::mysql::MysqlConnection;
+use diesel::prelude::*;
 
-pub struct DieselBikeRepository<'z > {
-    connection: &'z MysqlConnection
+pub struct DieselBikeRepository<'z> {
+    connection: &'z MysqlConnection,
 }
 
 impl<'z> DieselBikeRepository<'z> {
     pub fn new(connection: &'z MysqlConnection) -> Self {
-        Self {
-            connection
-        }
+        Self { connection }
     }
 }
 

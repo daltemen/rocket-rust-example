@@ -1,6 +1,6 @@
-use diesel::MysqlConnection;
 use crate::managers::bike_managers::BikeCrudManager;
 use crate::repositories::bike_db_repository::DieselBikeRepository;
+use diesel::MysqlConnection;
 
 pub fn new_manager(connection: &MysqlConnection) -> BikeCrudManager<DieselBikeRepository> {
     let repo = DieselBikeRepository::new(connection);
