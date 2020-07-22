@@ -52,8 +52,17 @@ impl<T> BikeManager for BikeCrudManager<T> where
             model: bike_in.model,
         };
 
-        // TODO: handle error
-        let bike = self.repo.create(&mut bike).unwrap();
+        let result = self.repo.create(&mut bike);
+
+        if let Err(e) = result {
+            // TODO: log
+            println!("Error: {}", e);
+            return Err(BikesManagerError::RepositoryError(
+                "Error creating bike".to_string(),
+            ));
+        }
+
+        let bike = result.unwrap();
 
         let bike_out = BikeOut {
             id: bike.id.clone(),
@@ -65,8 +74,16 @@ impl<T> BikeManager for BikeCrudManager<T> where
     }
 
     fn read_all(&self) -> Result<Vec<BikeOut>, BikesManagerError> {
-        // TODO: handle error
-        let bikes = self.repo.read_all().unwrap();
+        let result = self.repo.read_all();
+        if let Err(e) = result {
+            // TODO: log
+            println!("Error: {}", e);
+            return Err(BikesManagerError::RepositoryError(
+                "Error reading bike".to_string(),
+            ));
+        }
+
+        let bikes = result.unwrap();
         let outs = bikes.iter()
             .map(|b| BikeOut {
                 id: b.id.clone(),
@@ -83,9 +100,17 @@ impl<T> BikeManager for BikeCrudManager<T> where
             description: bike_in.description,
             model: bike_in.model,
         };
+        let result = self.repo.update(id, &bike);
+        if let Err(e) = result {
+            // TODO: log
+            println!("Error: {}", e);
+            return Err(BikesManagerError::RepositoryError(
+                "Error updating bike".to_string(),
+            ));
+        }
 
-        // TODO: handle error
-        let bike = self.repo.update(id, &bike).unwrap();
+        let bike = result.unwrap();
+
         let bike_out = BikeOut {
             id: bike.id.clone(),
             description: bike.description.clone(),
@@ -96,8 +121,16 @@ impl<T> BikeManager for BikeCrudManager<T> where
     }
 
     fn delete(&self, id: i32) -> Result<bool, BikesManagerError> {
-        // TODO: handle error
-        let deleted = self.repo.delete(id).unwrap();
+        let result = self.repo.delete(id);
+        if let Err(e) = result {
+            // TODO: log
+            println!("Error: {}", e);
+            return Err(BikesManagerError::RepositoryError(
+                "Error updating bike".to_string(),
+            ));
+        }
+
+        let deleted = result.unwrap();
         Ok(deleted)
     }
 }
