@@ -1,4 +1,4 @@
-use crate::domains::bike_repo;
+use crate::domains::{bike_repo, bike_errors};
 use crate::domains::bike_errors::BikesError;
 use crate::domains::bike::Bike;
 
@@ -39,5 +39,39 @@ impl bike_repo::BikeRepo for BikeRepoMock {
 
     fn delete(&self, _id: i32) -> Result<bool, BikesError> {
         Ok(true)
+    }
+}
+
+pub struct BikeRepoMockError {}
+
+impl BikeRepoMockError {
+    pub fn new() -> Self {
+        Self {}
+    }
+}
+
+impl bike_repo::BikeRepo for BikeRepoMockError {
+    fn create<'a, 'b>(&'a self, bike: &'b mut Bike) -> Result<&'b Bike, BikesError> {
+        Err(bike_errors::BikesError::DBError(
+            "Error creating bikes".to_string(),
+        ))
+    }
+
+    fn read_all(&self) -> Result<Vec<Bike>, BikesError> {
+        Err(bike_errors::BikesError::DBError(
+            "Error reading all bikes".to_string(),
+        ))
+    }
+
+    fn update<'a, 'b>(&'a self, _id: i32, bike: &'b Bike) -> Result<&'b Bike, BikesError> {
+        Err(bike_errors::BikesError::DBError(
+            "Error updating bikes".to_string(),
+        ))
+    }
+
+    fn delete(&self, _id: i32) -> Result<bool, BikesError> {
+        Err(bike_errors::BikesError::DBError(
+            "Error deleting bikes".to_string(),
+        ))
     }
 }

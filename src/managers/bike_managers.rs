@@ -139,7 +139,8 @@ impl<T> BikeManager for BikeCrudManager<T>
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::repositories::mocks::BikeRepoMock;
+    use crate::repositories::mocks::{BikeRepoMock, BikeRepoMockError};
+    use crate::domains::bike_errors;
 
     fn get_manager() -> BikeCrudManager<BikeRepoMock> {
         let repo_mock = BikeRepoMock::new();
@@ -199,4 +200,62 @@ mod tests {
 
         assert!(bike_out);
     }
+
+    fn get_manager_error() -> BikeCrudManager<BikeRepoMockError> {
+        let repo_mock = BikeRepoMockError::new();
+        let manager = BikeCrudManager::new(repo_mock);
+
+        manager
+    }
+
+    #[test]
+    fn test_bike_crud_manager_create_error() {
+        let manager = get_manager_error();
+
+        let description = "description".to_string();
+        let model = "model".to_string();
+
+        let bike_in = BikeIn {
+            description: Some(description.clone()),
+            model: Some(model.clone()),
+        };
+
+        let result = manager.create(bike_in).is_ok();
+
+        assert_eq!(false, result);
+    }
+
+    #[test]
+    fn test_bike_crud_manager_read_all_error() {
+        let manager = get_manager_error();
+
+        let result = manager.read_all().is_ok();
+
+        assert_eq!(false, result);
+    }
+
+    #[test]
+    fn test_bike_crud_manager_update_error() {
+        let manager = get_manager_error();
+
+        let description = "description".to_string();
+        let model = "model".to_string();
+
+        let bike_in = BikeIn {
+            description: Some(description.clone()),
+            model: Some(model.clone()),
+        };
+        let result = manager.update(1, bike_in).is_ok();
+
+        assert_eq!(false, result);
+    }
+
+    #[test]
+    fn test_bike_crud_manager_delete_error() {
+        let manager = get_manager_error();
+        let result = manager.delete(1).is_ok();
+
+        assert_eq!(false, result);
+    }
+
 }
