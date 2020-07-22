@@ -5,6 +5,7 @@ use crate::domains::bike::Bike;
 pub struct BikeRepoMock {}
 
 impl BikeRepoMock {
+    #[allow(dead_code)]
     pub fn new() -> Self {
         Self {}
     }
@@ -45,13 +46,14 @@ impl bike_repo::BikeRepo for BikeRepoMock {
 pub struct BikeRepoMockError {}
 
 impl BikeRepoMockError {
+    #[allow(dead_code)]
     pub fn new() -> Self {
         Self {}
     }
 }
 
 impl bike_repo::BikeRepo for BikeRepoMockError {
-    fn create<'a, 'b>(&'a self, bike: &'b mut Bike) -> Result<&'b Bike, BikesError> {
+    fn create<'a, 'b>(&'a self, _bike: &'b mut Bike) -> Result<&'b Bike, BikesError> {
         Err(bike_errors::BikesError::DBError(
             "Error creating bikes".to_string(),
         ))
@@ -63,7 +65,7 @@ impl bike_repo::BikeRepo for BikeRepoMockError {
         ))
     }
 
-    fn update<'a, 'b>(&'a self, _id: i32, bike: &'b Bike) -> Result<&'b Bike, BikesError> {
+    fn update<'a, 'b>(&'a self, _id: i32, _bike: &'b Bike) -> Result<&'b Bike, BikesError> {
         Err(bike_errors::BikesError::DBError(
             "Error updating bikes".to_string(),
         ))
