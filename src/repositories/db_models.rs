@@ -1,7 +1,4 @@
 use crate::schema::bikes;
-use diesel;
-use diesel::mysql::MysqlConnection;
-use diesel::prelude::*;
 
 #[table_name = "bikes"]
 #[derive(AsChangeset, Queryable, Insertable)]

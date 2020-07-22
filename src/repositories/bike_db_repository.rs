@@ -2,7 +2,6 @@ use crate::schema::bikes;
 use diesel;
 use diesel::prelude::*;
 use crate::repositories::db_models::BikeDB;
-use crate::domains::bike;
 use crate::domains::bike::Bike;
 use crate::domains::bike_errors;
 use crate::domains::bike_errors::BikesError;

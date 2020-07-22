@@ -78,7 +78,7 @@ impl<T> BikeManager for BikeCrudManager<T> where
     }
 
     fn update(&self, id: i32, bike_in: BikeIn) -> Result<BikeOut, BikesManagerError> {
-        let mut bike = Bike {
+        let bike = Bike {
             id: None,
             description: bike_in.description,
             model: bike_in.model,

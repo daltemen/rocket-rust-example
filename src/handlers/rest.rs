@@ -1,13 +1,10 @@
 use rocket_contrib::json::{Json, JsonValue};
-use crate::handlers::rest_models::{BikeRequest, BikeResponse};
+use rocket::http::{Status};
+use crate::handlers::rest_models::{BikeRequest, BikeResponse, ApiResponse};
 // use crate::db;
 use crate::configs::config;
-use crate::repositories::bike_db_repository;
-use crate::domains::bike::Bike;
-use crate::domains::bike_repo::BikeRepo;
 use crate::managers::bike_managers::{BikeManager, BikeIn};
 use crate::datasources::db;
-use rocket::State;
 
 #[get("/")]
 pub fn index() -> &'static str {
@@ -15,22 +12,27 @@ pub fn index() -> &'static str {
 }
 
 #[post("/", data = "<bike>")]
-pub fn create(bike: Json<BikeRequest>, connection: db::Connection) -> Json<BikeResponse> {
+pub fn create(bike: Json<BikeRequest>, connection: db::Connection) -> ApiResponse {
     let manager = config::new_manager(&connection);
 
     let bike = bike.into_inner();
     let bike = BikeIn {
-        description: Some(bike.description),
-        model: Some(bike.model),
+        description: bike.description,
+        model: bike.model,
     };
 
     let out = manager.create(bike).unwrap();
 
-    Json(BikeResponse {
+    let response = BikeResponse {
         id: out.id.as_ref().unwrap().clone(),
-        description: out.description.as_ref().unwrap().clone(),
-        model: out.model.as_ref().unwrap().clone(),
-    })
+        description: out.description,
+        model: out.model,
+    };
+
+    ApiResponse {
+        json: json!(response),
+        status: Status::Created,
+    }
 }
 
 #[get("/")]
@@ -42,8 +44,8 @@ pub fn read(connection: db::Connection) -> Json<JsonValue> {
     let response: Vec<BikeResponse> = bikes.iter()
         .map(|b| BikeResponse {
             id: b.id.as_ref().unwrap().clone(),
-            description: b.description.as_ref().unwrap().clone(),
-            model: b.model.as_ref().unwrap().clone(),
+            description: b.description.clone(),
+            model: b.model.clone(),
         })
         .collect();
 
@@ -56,16 +58,16 @@ pub fn update(id: i32, bike: Json<BikeRequest>, connection: db::Connection) -> J
     let bike = bike.into_inner();
 
     let bike = BikeIn {
-        description: Some(bike.description),
-        model: Some(bike.model),
+        description: bike.description,
+        model: bike.model,
     };
     // TODO: handle error
     let out = manager.update(id, bike).unwrap();
 
     Json(BikeResponse {
         id: id,
-        description: out.description.as_ref().unwrap().clone(),
-        model: out.model.as_ref().unwrap().clone(),
+        description: out.description.clone(),
+        model: out.model.clone(),
     })
 }
 

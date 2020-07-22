@@ -8,15 +8,7 @@ extern crate serde_derive;
 #[macro_use]
 extern crate diesel;
 
-use crate::domains::bike::Bike;
-use handlers::rest_models::{BikeRequest, BikeResponse};
-use rocket_contrib::json::{Json, JsonValue};
-use crate::repositories::bike_db_repository;
-use serde::private::ser::constrain;
-use crate::domains::bike_repo::BikeRepo;
 use crate::handlers::rest;
-use crate::managers::bike_managers::BikeCrudManager;
-use crate::repositories::bike_db_repository::DieselBikeRepository;
 use crate::datasources::db;
 
 mod domains;
