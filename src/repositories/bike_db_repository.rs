@@ -23,7 +23,17 @@ impl DieselBikeRepository {
 
 impl bike_repo::BikeRepo for DieselBikeRepository {
     fn create<'a, 'b>(&'a self, bike: &'b mut Bike) -> Result<&'b Bike, BikesError> {
-        let conn = self.connection.get().unwrap();
+        let pool_result = self.connection.get();
+
+        if let Err(e) = pool_result {
+            // TODO: log
+            println!("Error: {}", e);
+            return Err(bike_errors::BikesError::DBError(
+                "Error connecting to pool".to_string(),
+            ));
+        }
+
+        let conn = pool_result.unwrap();
 
         let query_result = diesel::insert_into(bikes::table)
             .values((description.eq(&bike.description), model.eq(&bike.model)))
@@ -53,7 +63,17 @@ impl bike_repo::BikeRepo for DieselBikeRepository {
     }
 
     fn read_all(&self) -> Result<Vec<Bike>, BikesError> {
-        let conn = self.connection.get().unwrap();
+        let pool_result = self.connection.get();
+
+        if let Err(e) = pool_result {
+            // TODO: log
+            println!("Error: {}", e);
+            return Err(bike_errors::BikesError::DBError(
+                "Error connecting to pool".to_string(),
+            ));
+        }
+
+        let conn = pool_result.unwrap();
 
         let query_result: Result<Vec<BikeDB>, diesel::result::Error> =
             bikes::table.order(bikes::id.asc()).load::<BikeDB>(&conn);
@@ -80,7 +100,17 @@ impl bike_repo::BikeRepo for DieselBikeRepository {
     }
 
     fn update<'a, 'b>(&'a self, id_bike: i32, bike: &'b Bike) -> Result<&'b Bike, BikesError> {
-        let conn = self.connection.get().unwrap();
+        let pool_result = self.connection.get();
+
+        if let Err(e) = pool_result {
+            // TODO: log
+            println!("Error: {}", e);
+            return Err(bike_errors::BikesError::DBError(
+                "Error connecting to pool".to_string(),
+            ));
+        }
+
+        let conn = pool_result.unwrap();
 
         let query_result = diesel::update(bikes::table.find(id_bike))
             .set((description.eq(&bike.description), model.eq(&bike.model)))
@@ -98,7 +128,17 @@ impl bike_repo::BikeRepo for DieselBikeRepository {
     }
 
     fn delete(&self, id_bike: i32) -> Result<bool, bike_errors::BikesError> {
-        let conn = self.connection.get().unwrap();
+        let pool_result = self.connection.get();
+
+        if let Err(e) = pool_result {
+            // TODO: log
+            println!("Error: {}", e);
+            return Err(bike_errors::BikesError::DBError(
+                "Error connecting to pool".to_string(),
+            ));
+        }
+
+        let conn = pool_result.unwrap();
         let query_result = diesel::delete(bikes::table.find(id_bike)).execute(&conn);
         if let Err(e) = query_result {
             // TODO: log
