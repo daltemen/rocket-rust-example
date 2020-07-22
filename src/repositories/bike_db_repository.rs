@@ -8,22 +8,26 @@ use crate::schema::bikes::dsl::*;
 use diesel;
 use diesel::mysql::MysqlConnection;
 use diesel::prelude::*;
+use diesel::r2d2;
+use diesel::r2d2::ConnectionManager;
 
-pub struct DieselBikeRepository<'z> {
-    connection: &'z MysqlConnection,
+pub struct DieselBikeRepository {
+    connection: r2d2::Pool<ConnectionManager<MysqlConnection>>,
 }
 
-impl<'z> DieselBikeRepository<'z> {
-    pub fn new(connection: &'z MysqlConnection) -> Self {
+impl DieselBikeRepository {
+    pub fn new(connection: r2d2::Pool<ConnectionManager<MysqlConnection>>) -> Self {
         Self { connection }
     }
 }
 
-impl<'z> bike_repo::BikeRepo for DieselBikeRepository<'z> {
+impl bike_repo::BikeRepo for DieselBikeRepository {
     fn create<'a, 'b>(&'a self, bike: &'b mut Bike) -> Result<&'b Bike, BikesError> {
+        let conn = self.connection.get().unwrap();
+
         let query_result = diesel::insert_into(bikes::table)
             .values((description.eq(&bike.description), model.eq(&bike.model)))
-            .execute(self.connection);
+            .execute(&conn);
 
         if let Err(e) = query_result {
             // TODO: log
@@ -33,7 +37,7 @@ impl<'z> bike_repo::BikeRepo for DieselBikeRepository<'z> {
             ));
         }
         let bike_db_result: Result<BikeDB, diesel::result::Error> =
-            bikes::table.order(id.desc()).first(self.connection);
+            bikes::table.order(id.desc()).first(&conn);
 
         if let Err(e) = bike_db_result {
             // TODO: log
@@ -49,9 +53,10 @@ impl<'z> bike_repo::BikeRepo for DieselBikeRepository<'z> {
     }
 
     fn read_all(&self) -> Result<Vec<Bike>, BikesError> {
-        let query_result: Result<Vec<BikeDB>, diesel::result::Error> = bikes::table
-            .order(bikes::id.asc())
-            .load::<BikeDB>(self.connection);
+        let conn = self.connection.get().unwrap();
+
+        let query_result: Result<Vec<BikeDB>, diesel::result::Error> =
+            bikes::table.order(bikes::id.asc()).load::<BikeDB>(&conn);
 
         if let Err(e) = query_result {
             // TODO: log
@@ -75,9 +80,11 @@ impl<'z> bike_repo::BikeRepo for DieselBikeRepository<'z> {
     }
 
     fn update<'a, 'b>(&'a self, id_bike: i32, bike: &'b Bike) -> Result<&'b Bike, BikesError> {
+        let conn = self.connection.get().unwrap();
+
         let query_result = diesel::update(bikes::table.find(id_bike))
             .set((description.eq(&bike.description), model.eq(&bike.model)))
-            .execute(self.connection);
+            .execute(&conn);
 
         if let Err(e) = query_result {
             // TODO: log
@@ -91,7 +98,8 @@ impl<'z> bike_repo::BikeRepo for DieselBikeRepository<'z> {
     }
 
     fn delete(&self, id_bike: i32) -> Result<bool, bike_errors::BikesError> {
-        let query_result = diesel::delete(bikes::table.find(id_bike)).execute(self.connection);
+        let conn = self.connection.get().unwrap();
+        let query_result = diesel::delete(bikes::table.find(id_bike)).execute(&conn);
         if let Err(e) = query_result {
             // TODO: log
             println!("Error: {}", e);

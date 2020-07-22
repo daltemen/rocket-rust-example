@@ -1,6 +1,6 @@
-use crate::domains::{bike_repo, bike_errors};
-use crate::domains::bike_errors::BikesError;
 use crate::domains::bike::Bike;
+use crate::domains::bike_errors::BikesError;
+use crate::domains::{bike_errors, bike_repo};
 
 pub struct BikeRepoMock {}
 

@@ -1,9 +1,9 @@
-use crate::handlers::rest_models::{ApiResponse, BikeRequest, BikeResponse};
-use rocket::http::Status;
-use rocket_contrib::json::{Json, JsonValue};
 use crate::configs::config;
-use crate::datasources::db;
+use crate::handlers::rest_models::{ApiResponse, BikeRequest, BikeResponse};
 use crate::managers::bike_managers::{BikeIn, BikeManager};
+use rocket::http::Status;
+use rocket::State;
+use rocket_contrib::json::{Json, JsonValue};
 
 #[get("/")]
 pub fn index() -> &'static str {
@@ -11,8 +11,8 @@ pub fn index() -> &'static str {
 }
 
 #[post("/", data = "<bike>")]
-pub fn create(bike: Json<BikeRequest>, connection: db::Connection) -> ApiResponse {
-    let manager = config::new_manager(&connection);
+pub fn create(bike: Json<BikeRequest>, config: State<config::ConfigStatus>) -> ApiResponse {
+    let manager = &config.manager;
 
     let bike = bike.into_inner();
     let bike = BikeIn {
@@ -36,8 +36,8 @@ pub fn create(bike: Json<BikeRequest>, connection: db::Connection) -> ApiRespons
 }
 
 #[get("/")]
-pub fn read(connection: db::Connection) -> Json<JsonValue> {
-    let manager = config::new_manager(&connection);
+pub fn read(config: State<config::ConfigStatus>) -> Json<JsonValue> {
+    let manager = &config.manager;
 
     // TODO: handle error
     let bikes = manager.read_all().unwrap();
@@ -55,8 +55,12 @@ pub fn read(connection: db::Connection) -> Json<JsonValue> {
 }
 
 #[put("/<id>", data = "<bike>")]
-pub fn update(id: i32, bike: Json<BikeRequest>, connection: db::Connection) -> Json<BikeResponse> {
-    let manager = config::new_manager(&connection);
+pub fn update(
+    id: i32,
+    bike: Json<BikeRequest>,
+    config: State<config::ConfigStatus>,
+) -> Json<BikeResponse> {
+    let manager = &config.manager;
     let bike = bike.into_inner();
 
     let bike = BikeIn {
@@ -74,8 +78,8 @@ pub fn update(id: i32, bike: Json<BikeRequest>, connection: db::Connection) -> J
 }
 
 #[delete("/<id>")]
-pub fn delete(id: i32, connection: db::Connection) -> Json<JsonValue> {
-    let manager = config::new_manager(&connection);
+pub fn delete(id: i32, config: State<config::ConfigStatus>) -> Json<JsonValue> {
+    let manager = &config.manager;
 
     // TODO: handle error
     let result = manager.delete(id).unwrap();

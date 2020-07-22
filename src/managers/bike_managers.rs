@@ -26,15 +26,15 @@ pub struct BikeOut {
 }
 
 pub struct BikeCrudManager<T>
-    where
-        T: BikeRepo,
+where
+    T: BikeRepo,
 {
     pub repo: T,
 }
 
 impl<T> BikeCrudManager<T>
-    where
-        T: BikeRepo,
+where
+    T: BikeRepo,
 {
     pub fn new(repo: T) -> Self {
         Self { repo }
@@ -42,8 +42,8 @@ impl<T> BikeCrudManager<T>
 }
 
 impl<T> BikeManager for BikeCrudManager<T>
-    where
-        T: BikeRepo,
+where
+    T: BikeRepo,
 {
     fn create(&self, bike_in: BikeIn) -> Result<BikeOut, BikesManagerError> {
         let mut bike = Bike {
@@ -139,8 +139,8 @@ impl<T> BikeManager for BikeCrudManager<T>
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::repositories::mocks::{BikeRepoMock, BikeRepoMockError};
     use crate::domains::bike_errors;
+    use crate::repositories::mocks::{BikeRepoMock, BikeRepoMockError};
 
     fn get_manager() -> BikeCrudManager<BikeRepoMock> {
         let repo_mock = BikeRepoMock::new();
@@ -257,5 +257,4 @@ mod tests {
 
         assert_eq!(false, result);
     }
-
 }

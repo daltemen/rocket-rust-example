@@ -8,7 +8,7 @@ extern crate serde_derive;
 #[macro_use]
 extern crate diesel;
 
-use crate::datasources::db;
+use crate::configs::config;
 use crate::handlers::rest;
 
 mod domains;
@@ -22,8 +22,7 @@ mod repositories;
 
 pub fn run() {
     rocket::ignite()
-        .manage(db::connect())
-        // .manage(config)
+        .manage(config::ConfigStatus::new())
         .mount("/", routes![rest::index])
         .mount("/bike", routes![rest::create, rest::update, rest::delete])
         .mount("/bikes", routes![rest::read])
