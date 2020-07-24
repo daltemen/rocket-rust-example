@@ -89,3 +89,114 @@ pub fn delete(id: i32, config: State<config::ConfigStatus>) -> Json<JsonValue> {
         Json(json!({"status": "failed"}))
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use crate::configs::config;
+    use crate::configs::config::ConfigStatus;
+    use crate::managers::bike_managers::*;
+    use crate::managers::bike_managers;
+    use mockall::predicate::*;
+    use mockall::*;
+    use rocket::http::ContentType;
+    use rocket::http::Status;
+    use rocket::local::Client;
+
+    fn rocket(mock: bike_managers::MockBikeManager) -> rocket::Rocket {
+        rocket::ignite()
+            .manage(config::ConfigStatus::new(Box::new(mock)))
+            .mount("/", routes![index])
+            .mount("/bike", routes![create, update, delete])
+            .mount("/bikes", routes![read])
+    }
+
+    #[test]
+    fn test_rest_index() {
+        let mut mock = MockBikeManager::new();
+        let client = Client::new(rocket(mock)).expect("valid rocket instance");
+        let mut response = client.get("/").dispatch();
+        assert_eq!(response.status(), Status::Ok);
+        assert_eq!(response.body_string(), Some("Hello, world!".into()));
+    }
+
+    #[test]
+    fn test_rest_create() {
+        let mut mock = MockBikeManager::new();
+
+        mock.expect_create().returning(|_| Ok(BikeOut {
+            id: Some(1),
+            description: Some("description".into()),
+            model: Some("model".into()),
+        }));
+
+        let client = Client::new(rocket(mock)).expect("valid rocket instance");
+        let mut response = client
+            .post("/bike")
+            .header(ContentType::JSON)
+            .body(
+                r#"
+                {
+	"description": "description",
+	"model": "model"
+}
+"#, )
+            .dispatch();
+        assert_eq!(response.status(), Status::Created);
+        assert_eq!(response.body_string(), Some(r#"{"description":"description","id":1,"model":"model"}"#.into()));
+    }
+
+    #[test]
+    fn test_rest_read() {
+        let mut mock = MockBikeManager::new();
+
+        mock.expect_read_all().returning(|| Ok(vec![BikeOut {
+            id: Some(1),
+            description: Some("description".into()),
+            model: Some("model".into()),
+        }]));
+
+        let client = Client::new(rocket(mock)).expect("valid rocket instance");
+        let mut response = client.get("/bikes").dispatch();
+
+        assert_eq!(response.status(), Status::Ok);
+        assert_eq!(response.body_string(), Some(r#"[{"description":"description","id":1,"model":"model"}]"#.into()));
+    }
+
+    #[test]
+    fn test_rest_update() {
+        let mut mock = MockBikeManager::new();
+
+        mock.expect_update().returning(|_, _| Ok(BikeOut {
+            id: None,
+            description: Some("description".into()),
+            model: Some("model".into()),
+        }));
+
+        let client = Client::new(rocket(mock)).expect("valid rocket instance");
+        let mut response = client
+            .put("/bike/1")
+            .header(ContentType::JSON)
+            .body(r#"
+                {
+	"description": "description",
+	"model": "model"
+}
+"#, )
+            .dispatch();
+        assert_eq!(response.status(), Status::Ok);
+        assert_eq!(response.body_string(), Some(r#"{"id":1,"description":"description","model":"model"}"#.into()));
+    }
+
+    #[test]
+    fn test_rest_delete() {
+        let mut mock = MockBikeManager::new();
+
+        mock.expect_delete().returning(|_| Ok(true));
+
+        let client = Client::new(rocket(mock)).expect("valid rocket instance");
+        let mut response = client.delete("/bike/1").dispatch();
+        assert_eq!(response.status(), Status::Ok);
+        assert_eq!(response.body_string(), Some(r#"{"status":"ok"}"#.into()));
+    }
+}

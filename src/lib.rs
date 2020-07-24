@@ -9,7 +9,10 @@ extern crate serde_derive;
 extern crate diesel;
 
 use crate::configs::config;
+use crate::datasources::db;
 use crate::handlers::rest;
+use crate::managers::bike_managers::BikeCrudManager;
+use crate::repositories::bike_db_repository::DieselBikeRepository;
 
 mod domains;
 mod schema;
@@ -21,8 +24,12 @@ mod managers;
 mod repositories;
 
 pub fn run() {
+    let pool = db::connect();
+    let repo = DieselBikeRepository::new(pool);
+    let manager = BikeCrudManager::new(repo);
+
     rocket::ignite()
-        .manage(config::ConfigStatus::new())
+        .manage(config::ConfigStatus::new(Box::new(manager)))
         .mount("/", routes![rest::index])
         .mount("/bike", routes![rest::create, rest::update, rest::delete])
         .mount("/bikes", routes![rest::read])

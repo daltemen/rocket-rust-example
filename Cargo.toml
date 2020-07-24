@@ -12,3 +12,4 @@ rocket_contrib = "0.4.5"
 serde = "1.0.114"
 serde_derive = "1.0.114"
 diesel = { version = "1.4.4", features = ["mysql", "r2d2"] }
+mockall = "0.7.1"

@@ -1,16 +1,14 @@
 use crate::datasources::db;
-use crate::managers::bike_managers::{BikeCrudManager};
+use crate::domains::bike_repo::BikeRepo;
+use crate::managers::bike_managers::{BikeCrudManager, BikeManager};
 use crate::repositories::bike_db_repository::DieselBikeRepository;
 
 pub struct ConfigStatus {
-    pub manager: BikeCrudManager<DieselBikeRepository>,
+    pub manager: Box<dyn BikeManager + Send + Sync + 'static>,
 }
 
 impl ConfigStatus {
-    pub fn new() -> Self {
-        let pool = db::connect();
-        let repo = DieselBikeRepository::new(pool);
-        let manager = BikeCrudManager::new(repo);
+    pub fn new(manager: Box<dyn BikeManager + Send + Sync + 'static>) -> Self {
         Self { manager }
     }
 }

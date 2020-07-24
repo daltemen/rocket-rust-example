@@ -1,8 +1,12 @@
+use std::marker::Copy;
 use crate::domains::bike::Bike;
 use crate::domains::bike_repo::BikeRepo;
 use crate::managers::manager_errors;
 use crate::managers::manager_errors::BikesManagerError;
+use mockall::predicate::*;
+use mockall::*;
 
+#[automock]
 pub trait BikeManager {
     fn create(&self, bike_in: BikeIn) -> Result<BikeOut, manager_errors::BikesManagerError>;
     fn read_all(&self) -> Result<Vec<BikeOut>, manager_errors::BikesManagerError>;
