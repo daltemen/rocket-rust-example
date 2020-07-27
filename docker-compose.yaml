@@ -15,6 +15,20 @@ services:
     ports:
       - 3308:3306
 
+  example-api:
+    build: .
+    ports:
+      - 8000:8000
+    volumes:
+      - .:/app
+    command: bash -c "bash ./wait-for-it.sh db:3306 -q -- diesel setup && cargo watch -x run"
+    networks:
+      - default_net
+    env_file:
+      - .env
+    depends_on:
+      - example-db
+
 networks:
   default_net:
     name: default_net
