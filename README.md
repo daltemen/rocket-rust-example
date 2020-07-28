@@ -7,17 +7,16 @@ An example of rust with rocket with a pinch of clean architecture
 Tested in rustc 1.46.0-nightly
 
 ### Prerequisites
- 
+
 to run this project you need:
 * Docker and docker compose
 
-### Run with docker (DOCKER UNDER CONSTRUCTION)
-To run just run
+### Run with docker
 
 ```bash
 docker-compose up
 ```
- 
+
 ### Run tests
 
 #### Unit Tests
@@ -28,7 +27,7 @@ cargo test --lib
 
 #### Integration Tests
 
-With docker after run tests you probably need stop the db container
+With docker after run tests you probably need to stop the db container
 
 ```console
 docker-compose -f docker-compose-integration.yaml up
