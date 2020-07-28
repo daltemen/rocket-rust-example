@@ -1,4 +1,4 @@
-use rocket_rust_example::run;
+use example::run;
 
 fn main() {
     run();

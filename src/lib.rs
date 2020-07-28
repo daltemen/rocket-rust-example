@@ -21,7 +21,7 @@ mod configs;
 mod datasources;
 mod handlers;
 mod managers;
-mod repositories;
+pub mod repositories;
 
 pub fn run() {
     let pool = db::connect();
