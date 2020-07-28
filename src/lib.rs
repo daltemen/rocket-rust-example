@@ -14,11 +14,11 @@ use crate::handlers::rest;
 use crate::managers::bike_managers::BikeCrudManager;
 use crate::repositories::bike_db_repository::DieselBikeRepository;
 
-mod domains;
-mod schema;
+pub mod domains;
+pub mod schema;
 
 mod configs;
-mod datasources;
+pub mod datasources;
 mod handlers;
 mod managers;
 pub mod repositories;
