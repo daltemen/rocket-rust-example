@@ -1,0 +1,35 @@
+version: '3.7'
+
+services:
+  integration-db:
+    image: mysql:5.7
+    volumes:
+      - db_integration:/var/lib/mysql
+    restart: always
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: example
+    networks:
+      - integration_net
+    ports:
+      - 3309:3306
+
+  integration:
+    build: .
+    volumes:
+      - .:/app
+    command: bash -c "bash ./wait-for-it.sh db:3306 -q -- diesel setup && cargo test --test integration -- --test-threads=1"
+    networks:
+      - integration_net
+    environment:
+      DATABASE_URL: mysql://root:secret@integration-db:3306/example
+    depends_on:
+      - integration-db
+
+networks:
+  integration_net:
+    name: integration_net
+    driver: bridge
+volumes:
+  db_integration:

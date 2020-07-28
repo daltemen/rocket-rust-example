@@ -20,9 +20,25 @@ docker-compose up
  
 ### Run tests
 
+#### Unit Tests
+
 ```console
-cargo test
+cargo test --lib
 ```
+
+#### Integration Tests
+
+With docker after run tests you probably need stop the db container
+
+```console
+docker-compose -f docker-compose-integration.yaml up
+```
+
+to run with cargo take in mind a db
+
+ ```console
+cargo test --test integration -- --test-threads=1
+ ```
 
 ## Curl Quickly Functional Tests
 
