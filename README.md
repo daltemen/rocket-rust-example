@@ -1,8 +1,6 @@
 # rocket-rust-example
 An example of rust with rocket with a pinch of clean architecture
 
-# Under Construction :construction:
-
 ### Considerations
 Tested in rustc 1.46.0-nightly
 
