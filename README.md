@@ -7,7 +7,7 @@ Tested in rustc 1.46.0-nightly
 ### Prerequisites
 
 to run this project you need:
-* Docker and docker compose
+* Docker and docker-compose
 
 ### Run with docker
 
